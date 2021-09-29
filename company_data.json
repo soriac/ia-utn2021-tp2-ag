@@ -1,0 +1,6 @@
+[
+  {"requested": 50, "availability": [10, 20, 30, 40, 50], "assigned": [0, 0, 0, 0, 0]},
+  {"requested": 100, "availability": [20, 20, 20, 20, 20], "assigned": [0, 0, 0, 0, 0]},
+  {"requested": 75, "availability": [0, 90, 0, 0, 90], "assigned": [0, 0, 0, 0, 0]},
+  {"requested": 50, "availability": [10, 40, 10, 40, 10], "assigned": [0, 0, 0, 0, 0]}
+]
