@@ -1,3 +1,5 @@
+package com.ia
+
 import io.jenetics.Genotype
 import io.jenetics.IntegerGene
 import kotlinx.serialization.Serializable

@@ -1,3 +1,5 @@
+package com.ia
+
 import io.jenetics.Genotype
 import io.jenetics.IntegerChromosome
 import io.jenetics.IntegerGene
