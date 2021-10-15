@@ -7,15 +7,24 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import kotlin.math.min
+
+const val minPackageSize = 5
 
 @Serializable
 class Company(
     val requested: Int,
-    val availability: List<Int>,
+    var availability: List<Int>,
     var assigned: List<Int>
 ) {
     fun invalidDayCount() = availability.zip(assigned).count { it.first < it.second }
-    fun indivisiblePackageCount() = assigned.count { it % 5 != 0 }
+    fun fixInvalidDays() {
+        this.availability = availability.zip(assigned).map {
+            min(it.first, it.second)
+        }
+    }
+    fun indivisiblePackageCount() = assigned.count { it % minPackageSize != 0 }
+    fun indivisiblePackageAmount() = assigned.fold(0) { acc, i ->  acc + (i % minPackageSize) }
     fun tripCount() = assigned.count { it > 0 }
     fun totalAssigned() = assigned.sum()
 

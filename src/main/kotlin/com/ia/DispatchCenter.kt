@@ -6,12 +6,16 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
+fun main(args: Array<String>) {
+    DispatchCenter.generateData()
+}
+
 @Serializable
 data class DispatchCenter(
     val stock: List<Int>,
-    val dispatchOverheadFlat: Double = 0.5,
-    val dispatchOverheadPerTon: Double = 0.02,
-    val dailyWorkHours: Double = 100.0,
+    val dispatchOverheadFlat: Double,
+    val dispatchOverheadPerTon: Double,
+    val dailyWorkHours: Double,
 ) {
     fun calculateTotalWorkedHours(companies: List<Company>): Double {
         return companies.fold(0.0) { acc, company ->
@@ -41,6 +45,10 @@ data class DispatchCenter(
             return baseDispatchCenter!!
         }
 
+        fun setBaseDispatchCenter(newBaseDispatchCenter: DispatchCenter) {
+            this.baseDispatchCenter = newBaseDispatchCenter
+        }
+
         fun readData() {
             File("dispatch_center_data.json").bufferedReader().apply {
                 val read = readText()
@@ -51,7 +59,8 @@ data class DispatchCenter(
 
         fun generateData() {
             File("dispatch_center_data.json").bufferedWriter().apply {
-                val encoded = Json.encodeToString(baseDispatchCenter)
+                val encoded = Json.encodeToString(DispatchCenter(listOf(0, 0, 0, 0, 0), 0.5, 0.02, 64.0))
+                println(encoded)
                 write(encoded)
                 close()
             }

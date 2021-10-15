@@ -1,9 +1,1 @@
-{
-  "stock": [
-    1000,
-    1000,
-    1000,
-    1000,
-    1000
-  ]
-}
+{"stock":[0,0,0,0,0],"dispatchOverheadFlat":0.5,"dispatchOverheadPerTon":0.02,"dailyWorkHours":64.0}
