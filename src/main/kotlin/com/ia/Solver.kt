@@ -3,8 +3,8 @@ package com.ia
 import io.jenetics.*
 import io.jenetics.engine.Engine
 import io.jenetics.engine.EvolutionResult
-import io.jenetics.engine.Limits
 import io.jenetics.util.Factory
+import kotlin.math.abs
 import kotlin.math.ceil
 
 const val runCount = 10
@@ -19,7 +19,7 @@ fun main() {
 
         println("Resultado obtenido en $iterations iteraciones.")
         println("Aptitud: $score")
-        println("Mejor genotipo: ${result.first}")
+        println("Mejor genotipo: ${result.first}\n")
 
         RunOutcome(iterations, result, score)
     }
@@ -28,10 +28,11 @@ fun main() {
     val firstBest = sortedBySpeed.maxByOrNull { it.score }!!
     val best = sortedBySpeed.filter { it.score == firstBest.score }
 
+    println("La cantidad promedio de iteraciones fueron ${sortedBySpeed.map {it.iterations}.average()} y la máxima fue de ${sortedBySpeed.maxByOrNull { it.iterations }!!.iterations}")
     println("Hubieron ${best.size} resultado(s) con el valor de aptitud ${firstBest.score}, que fue el mas alto.")
-    println("El resultado con con menor cantidad de iteraciones fue de ${firstBest.iterations}. El genotipo fue:")
+    println("La menor cantidad de iteraciones para llegar al mejor resultado fue de ${firstBest.iterations}. El genotipo fue:")
     println(firstBest.result.first)
-    println("Los datos de aptitud por iteración son:")
+    println("\nLos datos de aptitud por iteración son:")
     println(firstBest.result.second)
 }
 
@@ -42,10 +43,10 @@ private fun eval(gt: Genotype<IntegerGene>): Int {
     val companies = Company.getCompanies(gt)
 
     companies.forEach { company ->
-        score -= company.invalidDayCount() * 10000
+        score -= company.invalidDayCount() * 100000
 
         val difference = company.totalAssigned() - company.requested
-        score -= if (difference > 0) difference else -difference * 2
+        score -= abs(difference)
 
         score -= company.indivisiblePackageAmount() * 100
 
@@ -54,7 +55,7 @@ private fun eval(gt: Genotype<IntegerGene>): Int {
 
     for (i in 0 until companies[0].availability.size) {
         val dayLeftoverHours = dispatchCenter.leftoverHours(companies, i)
-        if (dayLeftoverHours < 0) score -= ceil(dayLeftoverHours).toInt() * 1000
+        if (dayLeftoverHours < 0) score -= ceil(dayLeftoverHours).toInt() * 10000
     }
 
     return score
@@ -81,18 +82,17 @@ fun run(): Pair<Genotype<IntegerGene>, MutableList<Int>> {
     val engine = Engine
         .builder(::eval, gtf)
         .executor(Runnable::run)
-        .survivorsSelector(TournamentSelector())
-        .alterers(GaussianMutator(), UniformCrossover())
+        .survivorsSelector(RouletteWheelSelector())
+        .alterers(GaussianMutator(0.2), UniformCrossover(0.2, 0.5))
         .maximizing()
         .build()
 
     val fitnesses = mutableListOf<Int>()
 
     val result = engine.stream()
-        .limit(Limits.bySteadyFitness(10_000))
+        .limit(SteadyAndMinFitnessLimit(10_000, -10_000))
         .peek { result -> fitnesses.add(result.bestFitness()) }
         .collect(EvolutionResult.toBestGenotype())
 
     return Pair(result, fitnesses)
 }
-
