@@ -3,8 +3,8 @@ package com.ia
 import io.jenetics.engine.EvolutionResult
 import java.util.function.Predicate
 
-// copiado de SteadyFitnessLimit.java, es package local y no se puede extender
-// (ademas el user guide te da el ejemplo y te dice que lo podes copiar)
+// copied & modified from SteadyFitnessLimit.java, because it's package local and it can't be extended
+// (plus the user guide has this example and says to feel free to copy it)
 class SteadyAndMinFitnessLimit<C : Comparable<C>?>(generations: Int, minimumFitness: C) :
     Predicate<EvolutionResult<*, C>> {
     private val _generations: Int
